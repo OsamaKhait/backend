@@ -17,8 +17,8 @@ export interface IVisiteur extends Document {
 }
 
 const VisiteurSchema: Schema = new Schema({
-  nom: { type: String, required: false },
-  prenom: { type: String, required: false },
+  nom: { type: String, required: true },
+  prenom: { type: String, required: true },
   tel: { type: String, required: false },
   date_embauche: { type: Date, required: false },
   email: { type: String, required: true, unique: true },

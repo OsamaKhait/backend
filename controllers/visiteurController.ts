@@ -52,7 +52,6 @@ export const getAllVisiteurs = expressAsyncHandler(async (req: Request, res: Res
 });
 
 // Create visiteur
-// Create visiteur
 export const createVisiteur = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {
   // Validate input
   await body('email').isEmail().withMessage('Email invalide').run(req);
@@ -152,26 +151,34 @@ export const signup = expressAsyncHandler(async (req: Request, res: Response): P
   }
 });
 
-  export const login = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const {email, password} = req.body;
+// Login - Modifié pour inclure les informations du visiteur
+export const login = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const {email, password} = req.body;
 
   try {
-    const visiteur = await Visiteur
-      .findOne({ email })
-      if (!visiteur) {
-        res.status(404).json({ message: 'Visiteur non trouvé' });
-        return;
-      }
+    const visiteur = await Visiteur.findOne({ email });
+    if (!visiteur) {
+      res.status(404).json({ message: 'Visiteur non trouvé' });
+      return;
+    }
 
-      const isPasswordValid = await bcrypt.compare(password, visiteur.password);
-      if (!isPasswordValid) {
-        res.status(401).json({ message: 'Mot de passe incorrect' });
-        return;
-      }
+    const isPasswordValid = await bcrypt.compare(password, visiteur.password);
+    if (!isPasswordValid) {
+      res.status(401).json({ message: 'Mot de passe incorrect' });
+      return;
+    }
 
-      const token = jwt.sign({ userId: visiteur._id }, process.env.JWT_SECRET as string, { expiresIn: '24h' });
+    const token = jwt.sign({ userId: visiteur._id }, process.env.JWT_SECRET as string, { expiresIn: '24h' });
 
-      res.status(200).json({ message: 'Connexion réussie', token });
+    // Renvoie le token et les informations du visiteur
+    res.status(200).json({ 
+      message: 'Connexion réussie', 
+      token,
+      visiteur_id: visiteur._id,
+      nom: visiteur.nom,
+      prenom: visiteur.prenom,
+      email: visiteur.email
+    });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
   }
