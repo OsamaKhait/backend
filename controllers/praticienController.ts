@@ -101,6 +101,5 @@ export const deletePraticien = expressAsyncHandler(async (req: Request, res: Res
 
 export const getAllPraticiens = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {
     const praticiens = await Praticien.find();
-    console.log(praticiens);
     res.status(200).json(praticiens);
 });
